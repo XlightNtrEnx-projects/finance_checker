@@ -32,12 +32,13 @@ class StatementSummary:
         self.debit: float = 0.00
         self.net_change: float = 0.00
         self.parse_csv(filepath)
+        self.expected_file = f'{self.earliest_date} - {self.latest_date}.csv'
 
     def __str__(self) -> str:
-        return self.earliest_date.strftime('%Y-%m-%d') + ' - ' + self.latest_date.strftime('%Y-%m-%d')
+        return self.expected_file
 
     def __repr__(self) -> str:
-        return self.earliest_date.strftime('%Y-%m-%d') + ' - ' + self.latest_date.strftime('%Y-%m-%d')
+        return self.expected_file
 
     def parse_csv(self, filepath: str) -> None:
         with open(filepath) as csvfile:
