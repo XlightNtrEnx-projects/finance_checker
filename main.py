@@ -19,17 +19,19 @@ def main() -> None:
     for file in os.listdir(folder):
         filepath = os.path.join(folder, file)
         summary = StatementSummary(filepath)
-        summary.save()  # object saved to StatementSummary.objects in ascending date
-        expected_file = f'{summary.earliest_date} - {summary.latest_date}.csv'
-        if file != expected_file:
-            expected_filepath = os.path.join(folder, expected_file)
+        if file != summary.expected_file:
+            expected_filepath = os.path.join(folder, summary.expected_file)
             os.rename(filepath, expected_filepath)
+        summary.save()  # object saved to StatementSummary.objects in ascending date
     old_balance: float = 0.00
     net: float = 0.00
     new_balance: float = 0.00
     first_summary = True
     for summary in StatementSummary.objects:
-        if not first_summary:
+        if first_summary:
+            old_balance = summary.ledger_balance
+            first_summary = False
+        else:
             net = summary.net_change
             new_balance = summary.ledger_balance
             if old_balance + net != new_balance:
@@ -41,9 +43,6 @@ def main() -> None:
                         Net change: {net}\n \
                         New balance: {new_balance}')
                 old_balance = new_balance
-        else:
-            old_balance = summary.ledger_balance
-            first_summary = False
         logger.debug(f'Validated {summary}:\n \
                         Old balance: {old_balance}\n \
                         Net change: {net}\n \
